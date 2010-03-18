@@ -60,10 +60,13 @@ Zip and Unzip is easy: with DotNetZip, .NET applications written in VB, C# - any
 create, read, extract, or update zip files. For Mono or MS .NET.
 
 
-Changes log - 0.1 - 03/18/2010
+Changes log - 0.1 - 03/18/2010, 1734 - Max Trinidad
 1. Add the "Close" Button.
 2. Rename SQLPSX folder from "..\Module\SQLPSX_V2" to "..\Module\SQLPSX".
 3. Create a single installer, its 32 bit but should install OK on 64bit machines.
 4. Delete both SQLPSX_Install32 and 64 exe's.
+
+Changes log - 0.1a - 03/18/2010, 17:58 - Max Trinidad
+1. Put back both Installer 32/64 because the 32bit will not create the SQLPSX folder.
 
 
