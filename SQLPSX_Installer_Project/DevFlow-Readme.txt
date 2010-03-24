@@ -69,4 +69,7 @@ Changes log - 0.1 - 03/18/2010, 1734 - Max Trinidad
 Changes log - 0.1a - 03/18/2010, 17:58 - Max Trinidad
 1. Put back both Installer 32/64 because the 32bit will not create the SQLPSX folder.
 
+Changes log - 0.2 - 03/24/2010, 0922 - Max Trinidad
+1. I PSscript - "SQLPSX_LoadModules.ps1", added new modules to be loaded: adolib,SQLmaint, & SQLIse.
+
 
