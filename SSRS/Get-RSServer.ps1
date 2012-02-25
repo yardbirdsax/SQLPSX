@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
  Gets a ReportServer web service object.
 .PARAMETER ServerName
@@ -23,7 +23,11 @@ function Get-RSServer
       $ReportServer = New-WebServiceProxy -Uri $uri -UseDefaultCredential;
     }
   }
-    
+  
+  #Yes, we are adding the object to itself as a property. This is to allow for downstream compatibility
+  #with other functions for pipeline calls.
+  $reportServer | Add-Member -MemberType "NoteProperty" -Name "ReportServer" -Value $reportServer -Force;
+  
   return $reportServer;
   
 }
