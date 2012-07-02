@@ -26,17 +26,20 @@ function New-RSFolder
     [object]$ReportServer,
     [parameter(mandatory=$false,ValueFromPipelineByPropertyName=$true)]
     [string]$Path = "/",
-    [parameter(mandatory=$true)]
+    [parameter(mandatory=$true,ValueFromPipelineByPropertyName=$true)]
     [string]$Name    
   )
 
-  #Pass the ReportServer object to through the Get-ReportServer function.
-  #This is so that even if a string is passed, a ReportServer proxy object will be generated.
-  $ReportServer = Get-RSServer -ReportServer $ReportServer;
-
-  #Create the folder.
-  $folder = $ReportServer.CreateFolder($Name,$Path,$null);
+  process
+  {
+    #Pass the ReportServer object to through the Get-ReportServer function.
+    #This is so that even if a string is passed, a ReportServer proxy object will be generated.
+    $ReportServer = Get-RSServer -ReportServer $ReportServer;
   
-  return $folder;
+    #Create the folder.
+    $folder = $ReportServer.CreateFolder($Name,$Path,$null);
+    
+    Write-Output $folder;
+  }
   
 }
