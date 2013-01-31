@@ -24,7 +24,7 @@ function Get-RSServerPermission
   
     #Pass the ReportServer object to through the Get-ReportServer function.
     #This is so that even if a string is passed, a ReportServer proxy object will be generated.
-    $ReportServer = Get-ReportServer -ReportServer $ReportServer;
+    $ReportServer = Get-RSServer -ReportServer $ReportServer;
 
     $permissions = $ReportServer.GetSystemPolicies();
     
