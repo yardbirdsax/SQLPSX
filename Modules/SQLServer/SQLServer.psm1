@@ -13,18 +13,21 @@
 ### </Usage>
 ### </Script>
 # ---------------------------------------------------------------------------
-try {add-type -AssemblyName "Microsoft.SqlServer.ConnectionInfo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" -EA Stop}
-catch {add-type -AssemblyName "Microsoft.SqlServer.ConnectionInfo"}
+# 3/3/2016 JFEIERMAN - Begin change to load latest available version of SMO.
+try {[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.ConnectionInfo") | Out-Null;}
+catch {throw "Could not load Microsoft.SqlServer.ConnectionInfo";}
 
-try {add-type -AssemblyName "Microsoft.SqlServer.Smo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" -EA Stop; $smoVersion = 10}
-catch {add-type -AssemblyName "Microsoft.SqlServer.Smo"; $smoVersion = 9}
-
-try
+try 
 {
-    try {add-type -AssemblyName "Microsoft.SqlServer.SMOExtended, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" -EA Stop}
-    catch {add-type -AssemblyName "Microsoft.SqlServer.SMOExtended" -EA Stop}
+    [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SMO") | Out-Null;
+    $assemblyName = ([system.appdomain]::CurrentDomain.GetAssemblies() | ?{$_.FullName -like "*SqlServer.SMO*"}).FullName;
+    $smoVersion = [Regex]::Match($assemblyName,"Version=(\d+)").Groups[1].Value;
 }
+catch {throw "Could not load Microsoft.SqlServer.Smo";}
+
+try {[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Extended") | Out-Null;}
 catch {Write-Warning "SMOExtended not available"}
+# 3/3/2016 JFEIERMAN - End change to load latest available version of SMO.
 
 $scriptRoot = Split-Path (Resolve-Path $myInvocation.MyCommand.Path)
 
@@ -146,7 +149,7 @@ Get-SqlDatabase
 function Get-SqlDatabase
 { 
     param(
-    [Parameter(Mandatory=$true)] $sqlserver,
+    [Parameter(Mandatory=$true,ValueFromPipeline=$true)] $sqlserver,
     [string]$dbname,
     [switch]$force
     )
@@ -204,6 +207,8 @@ function Get-SqlData
     [Parameter(Mandatory=$true)] [string]$qry
     )
 
+    try
+    {
     switch ($dbname.GetType().Name)
     {
         'String' { $database = Get-SqlDatabase $sqlserver $dbname }
@@ -216,6 +221,11 @@ function Get-SqlData
 
     $ds = $database.ExecuteWithResults("$qry")
     $ds.Tables | foreach { $_.Rows}    
+    }
+    catch
+    {
+        throw $_;
+    }
 
 }# Get-SqlData
 
@@ -245,7 +255,7 @@ function Set-SqlData
 {
     param(
     $sqlserver,
-    [Parameter(Mandatory=$true)] [string]$dbname,
+    [Parameter(Mandatory=$true)] [object]$dbname,
     [Parameter(Mandatory=$true)] [string]$qry
     )
 
